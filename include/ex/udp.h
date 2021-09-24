@@ -143,20 +143,20 @@ public:
   }
 
   void set_reuseaddr(int n) {
-    setsockopt(m_fd, SOL_SOCKET, SO_REUSEADDR, &n, sizeof(n));
+    setsockopt(SOL_SOCKET, SO_REUSEADDR, &n, sizeof(n));
   }
 
   void set_broadcast(int n) {
 
-    setsockopt(m_fd, SOL_SOCKET, SO_BROADCAST, &n, sizeof(n));
+    setsockopt(SOL_SOCKET, SO_BROADCAST, &n, sizeof(n));
   }
 
   void set_send_buffer_size(int n) {
-    setsockopt(m_fd, SOL_SOCKET, SO_SNDBUF, &n, sizeof(n));
+    setsockopt(SOL_SOCKET, SO_SNDBUF, &n, sizeof(n));
   }
 
   void set_recv_buffer_size(int n) {
-    setsockopt(m_fd, SOL_SOCKET, SO_RCVBUF, &n, sizeof(n));
+    setsockopt(SOL_SOCKET, SO_RCVBUF, &n, sizeof(n));
   }
 
   void close() {
