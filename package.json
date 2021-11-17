@@ -1,6 +1,6 @@
 {
   "name": "@smake/socket",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Typescript Module Template",
   "license": "MIT",
   "repository": "https://github.com/kuyoonjo/smake-lib-socket.git",
@@ -54,8 +54,7 @@
     "preset": "ts-jest"
   },
   "dependencies": {
-    "@smake/buffer": "^1.1.3",
-    "@smake/libs": "^1.2.1",
-    "smake": "^0.4.1"
+    "@smake/buffer": "^2.0.0",
+    "smake": "^1.0.0"
   }
 }
