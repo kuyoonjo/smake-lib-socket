@@ -1,4 +1,5 @@
 #pragma once
+#include "ex/buffer.h"
 #include "ipaddr.h"
 #include "socket.h"
 #include <ex/shared_buffer.h>
@@ -122,8 +123,16 @@ public:
     return res;
   }
 
+  uint8_t* buffer() {
+    return m_recv_buffer.data();
+  }
+
   ex::shared_buffer recv_buffer() {
     return ex::shared_buffer(m_recv_buffer, 0, m_recv_buffer_len);
+  }
+
+  ex::buffer pack_buffer() {
+    return ex::buffer::from(m_recv_buffer.data(), m_recv_buffer_len);
   }
 
   ipaddr<T> &rmt_ipaddr() { return m_rmt_ipaddr; }
@@ -144,6 +153,10 @@ public:
 
   void set_reuseaddr(int n) {
     setsockopt(SOL_SOCKET, SO_REUSEADDR, &n, sizeof(n));
+  }
+
+  void set_reuseport(int n) {
+    setsockopt(SOL_SOCKET, SO_REUSEPORT, &n, sizeof(n));
   }
 
   void set_broadcast(int n) {
