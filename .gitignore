@@ -11,3 +11,4 @@
 /.vscode
 /compile_commands.json
 /.ninja_log
+/.ninja_deps

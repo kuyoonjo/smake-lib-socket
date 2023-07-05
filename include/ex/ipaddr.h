@@ -60,10 +60,11 @@ template <typename T = v4> struct ipaddr {
   }
   explicit ipaddr(const typename T::sockaddr_t &addr) : sockaddr(addr) {}
 
-  std::string_view ip() const { return T::ip_str(&sockaddr); }
+  std::string ip() const { return T::ip_str(&sockaddr); }
 
   uint16_t port() const { return ntoh16(sockaddr.sin_port); }
   typename T::sockaddr_t sockaddr;
+  socklen_t size = sizeof(sockaddr);
 };
 
 inline bool operator==(const ex::ipaddr<ex::v4> &c1,
