@@ -201,15 +201,18 @@ public:
     return res;
   }
 
-  // This function returns the address of the buffer which receives datagram by calling `recvfrom()`.
+  // This function returns the address of the buffer which receives datagram by
+  // calling `recvfrom()`.
   uint8_t *buffer() { return m_recv_buffer.data(); }
 
-  // This function retrieves the the received datagram which is received by calling `recvfrom()`.
+  // This function retrieves the the received datagram which is received by
+  // calling `recvfrom()`.
   ex::shared_buffer recv_buffer() {
     return ex::shared_buffer(m_recv_buffer, 0, m_recv_buffer_len);
   }
 
-  // This function packs the received datagram which is received by calling `recvfrom()` to an `ex::buffer`.
+  // This function packs the received datagram which is received by calling
+  // `recvfrom()` to an `ex::buffer`.
   ex::buffer pack_buffer() {
     return ex::buffer::from(m_recv_buffer.data(), m_recv_buffer_len);
   }
@@ -286,6 +289,21 @@ public:
   // `setsockopt(SOL_SOCKET, SO_RCVBUF, &n, sizeof(n));`
   int set_recv_buffer_size(int n) {
     return setsockopt(SOL_SOCKET, SO_RCVBUF, &n, sizeof(n));
+  }
+
+  // short for
+  //
+  // `setsockopt(SOL_SOCKET, SO_RCVTIMEO, &n, sizeof(n));`
+  int set_recv_timeout(int timeout_ms) {
+#ifdef _WIN32
+    DWORD timeout = timeout_ms;
+    return setsockopt(SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof timeout);
+#else
+    struct timeval tv;
+    tv.tv_sec = timeout_ms / 1000;
+    tv.tv_usec = (timeout_ms % 1000) * 1000;
+    return setsockopt(SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+#endif
   }
 
   // This function closes an existing socket.
