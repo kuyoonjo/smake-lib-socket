@@ -6,7 +6,8 @@
 
 #ifdef _MSC_VER
 #pragma comment(lib, "Ws2_32.lib")
-#else /* mingw */
+#endif
+#if defined(__clang__) || defined(__GNUC__) || defined(__GNUG__)
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define htonll(x) __builtin_bswap64(x)
 #define ntohll(x) __builtin_bswap64(x)
