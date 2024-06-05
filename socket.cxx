@@ -1,3 +1,4 @@
+#include "ex/socket.h"
 #include "ex/buffer.h"
 #include "ex/ipaddr.h"
 #include <cassert>
@@ -31,30 +32,37 @@ int main() {
 
   ex::socket::startup();
 
-  ex::udp u;
-  u.bind(ia1);
-
   std::vector<std::thread> threads;
   for (int i = 0; i < 8; ++i) {
-    threads.push_back(std::thread([&u, i] {
+    threads.push_back(std::thread([i, ia1] {
+      ex::udp u;
+      u.set_reuseaddr(1);
+      u.set_reuseport(1);
+      u.set_recv_timeout(3000);
+      u.bind(ia1);
       std::cout << "worker " << i << " started." << std::endl;
       ex::buffer buffer(1024);
       ex::ipaddr<> ipaddr;
       for (;;) {
-        auto n = u.recvfrom(buffer.data(), buffer.size(), ipaddr);
-        std::cout << "worker " << i << " recv " << n << " bytes: ";
-        for (int j = 0; j < n; ++j)
-          printf("%02x ", buffer[j]);
-        std::cout << std::endl;
+        try {
+          auto n = u.recvfrom(buffer.data(), buffer.size(), ipaddr);
+          std::cout << "worker " << i << " recv " << n << " bytes: ";
+          for (int j = 0; j < n; ++j)
+            printf("%02x ", buffer[j]);
+          std::cout << std::endl;
+        } catch (ex::socket::exception &e) {
+          std::cout << e.code << ": " << e.msg << std::endl;
+        }
       }
+
+      u.close();
+      u.shutdown(SHUT_RDWR);
     }));
   }
-  for(auto& th: threads) {
+  for (auto &th : threads) {
     th.join();
   }
 
-  u.close();
-  u.shutdown(SHUT_RDWR);
   ex::socket::cleanup();
   return 0;
 }
