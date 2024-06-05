@@ -1,5 +1,5 @@
 #pragma once
-#include "ex/buffer.h"
+#include <ex/buffer.h>
 #include "ipaddr.h"
 #include "socket.h"
 #include <cstddef>
@@ -50,7 +50,7 @@ public:
   explicit udp(size_t recv_buffer_size = 1024)
       : m_recv_buffer(recv_buffer_size) {
     auto res = ::socket(T::domain, SOCK_DGRAM, IPPROTO_UDP);
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("socket failed.", ERRNO);
 #endif
@@ -65,7 +65,7 @@ public:
   // be retrieved by using macro `ERRNO`.
   int bind(const ipaddr<T> &ia) {
     auto res = ::bind(fd, (const sockaddr *)&ia.sockaddr, sizeof(ia.sockaddr));
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("bind failed.", ERRNO);
 #endif
@@ -94,7 +94,7 @@ public:
                ipaddr<T> &rmt_ipaddr) {
     auto res = ::recvfrom(fd, CAST_CHAR_PTR recv_buffer, recv_buffer_size, 0,
                           (sockaddr *)&rmt_ipaddr.sockaddr, &rmt_ipaddr.size);
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("recvfrom failed.", ERRNO);
 #endif
@@ -121,7 +121,7 @@ public:
     auto res =
         ::sendto(fd, str, strlen(str), 0, (sockaddr *)&dst_ipaddr.sockaddr,
                  sizeof(dst_ipaddr.sockaddr));
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("sendto failed.", ERRNO);
 #endif
@@ -139,7 +139,7 @@ public:
     auto res =
         ::sendto(fd, CAST_CONST_CHAR_PTR buf, size, 0,
                  (sockaddr *)&dst_ipaddr.sockaddr, sizeof(dst_ipaddr.sockaddr));
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("sendto failed.", ERRNO);
 #endif
@@ -157,7 +157,7 @@ public:
     auto res =
         ::sendto(fd, CAST_CONST_CHAR_PTR t.data(), t.size(), 0,
                  (sockaddr *)&dst_ipaddr.sockaddr, sizeof(dst_ipaddr.sockaddr));
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("sendto failed.", ERRNO);
 #endif
@@ -174,7 +174,7 @@ public:
     auto res =
         ::sendto(fd, CAST_CONST_CHAR_PTR t.data(), t.size(), 0,
                  (sockaddr *)&dst_ipaddr.sockaddr, sizeof(dst_ipaddr.sockaddr));
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("sendto failed.", ERRNO);
 #endif
@@ -194,7 +194,7 @@ public:
     auto res =
         ::sendto(fd, CAST_CONST_CHAR_PTR v.data(), t.size(), 0,
                  (sockaddr *)&dst_ipaddr.sockaddr, sizeof(dst_ipaddr.sockaddr));
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("sendto failed.", ERRNO);
 #endif
@@ -228,7 +228,7 @@ public:
   int setsockopt(int lv, int opt, const void *optval, int optlen) {
     auto res = ::setsockopt(fd, lv, opt, CAST_CONST_CHAR_PTR optval,
                             CAST_SOCKLEN_T optlen);
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("setsockopt failed.", ERRNO);
 #endif
@@ -243,7 +243,7 @@ public:
   int getsockopt(int lv, int opt, void *optval, int *optlen) {
     auto res = ::getsockopt(fd, lv, opt, CAST_CHAR_PTR optval,
                             CAST_SOCKLEN_T_PTR optlen);
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("getsockopt failed.", ERRNO);
 #endif
@@ -313,7 +313,7 @@ public:
   // be retrieved by using macro `ERRNO`.
   int close() {
     auto res = ::close(fd);
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("close failed.", ERRNO);
 #endif
@@ -330,7 +330,7 @@ public:
   // be retrieved by using macro `ERRNO`.
   int shutdown(int how = SHUT_RDWR) THROWS_SOCKET_EXCEPTION {
     auto res = ::shutdown(fd, how);
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
     if (res == -1)
       throw socket::exception("shutdown failed.", ERRNO);
 #endif

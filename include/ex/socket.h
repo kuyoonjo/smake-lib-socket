@@ -1,11 +1,14 @@
 #pragma once
 
+#if defined(__cpp_exceptions) && !defined(DISABLE_SOCKET_EXCEPTION)
+#define USE_SOCKET_EXCEPTION
 #include <exception>
+#include <stdexcept>
 #include <string>
+#endif
 
 #ifdef _WIN32
 #include <WinSock2.h>
-#include <exception>
 
 #ifdef _MSC_VER
 #pragma comment(lib, "Ws2_32.lib")
@@ -16,7 +19,7 @@
 #define ERRNO errno
 #endif
 
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
 #define THROWS_SOCKET_EXCEPTION
 #else
 #define THROWS_SOCKET_EXCEPTION noexcept
@@ -24,12 +27,11 @@
 
 namespace ex {
 namespace socket {
-#ifdef __cpp_exceptions
-class exception : public std::exception {
+#ifdef USE_SOCKET_EXCEPTION
+class exception : public std::runtime_error {
 public:
-  explicit exception(std::string msg, int code) : msg(msg), code(code) {}
-  virtual const char *what() const throw() { return msg.c_str(); }
-  std::string msg;
+  explicit exception(const char *msg, int code)
+      : std::runtime_error(msg), code(code) {}
   int code;
 };
 #endif
@@ -47,7 +49,7 @@ inline WSADATA WSAData;
 // https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsastartup
 inline int startup() {
   auto res = WSAStartup(MAKEWORD(2, 2), &WSAData);
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
   if (res)
     throw exception("WSAStartup failed.", res);
 #endif
@@ -63,7 +65,7 @@ inline int startup() {
 // https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsacleanup
 inline int cleanup() {
   auto res = WSACleanup();
-#ifdef __cpp_exceptions
+#ifdef USE_SOCKET_EXCEPTION
   if (res)
     throw exception("WSACleanup failed.", res);
 #endif
